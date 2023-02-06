@@ -1,6 +1,6 @@
 
-const container = document.createElement('div');
 
-container.innerHTML = '안녕?';
-
-document.body.appendChild(container);
+const app = document.createElement('div');
+app.id = 'app';
+app.innerHTML = '주제 메인 페이지';
+document.body.appendChild(app);
