@@ -1,6 +1,16 @@
+import "./tailwind.css";
+import Layout from "./layout/main";
 
 
 const app = document.createElement('div');
 app.id = 'app';
-app.innerHTML = '주제 메인 페이지';
 document.body.appendChild(app);
+
+Layout.append(app);
+
+setTimeout(() => {
+    console.log('Layout.getParentElement(): ', Layout.getParentElement());
+    Layout.setState({
+        title: '변경된 레이아웃'
+    });
+}, 1000);

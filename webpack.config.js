@@ -10,10 +10,21 @@ module.exports = {
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
+            {
+                test: /.css?$/,
+                exclude: [],
+                use: ["style-loader", "css-loader", "postcss-loader"],
+            },
         ],
+
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
+        // path alias를 설정하는 부분
+        alias: {
+            "@src": path.resolve(__dirname, "src"),
+            "@util": path.resolve(__dirname, "src/util"),
+        }
     },
     output: {
         filename: 'index.js',
@@ -40,7 +51,7 @@ module.exports = {
                 // <meta name="theme-color" content="#4285f4" />
                 'theme-color': '#4285f4',
             },
-            template: 'src/index.html',
+            template: 'index.html',
         }),
     ]
 };
