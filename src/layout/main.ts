@@ -1,14 +1,16 @@
 import Component from '@util/Component';
+import PageMain from '@src/page/Main';
 
 
 class Layout extends Component {
     static state = {
         title: '메인 레이아웃',
     };
-    static template() {
 
+    static init() {
+        this.setRootClass('container');
         return `
-            ${this.state.title}
+            ${PageMain.render(this)}
         `;
     }
 }
