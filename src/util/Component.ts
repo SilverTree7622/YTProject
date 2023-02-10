@@ -2,15 +2,17 @@ import { v1 } from 'uuid';
 
 
 class Components {
-    static components: Component[] = [];
+    static components: { component: Component; id: string; }[] = [];
 
     static add(component) {
-        this.components.push(component);
+        this.components.push({
+            component, id: component.getId()
+        });
         return this;
     }
 
-    static find() {
-
+    static find(id: string) {
+        
         return this;
     }
 }
@@ -18,9 +20,10 @@ class Components {
 class Component {
     private static _id: string = '';
     private static _template: string = ``;
+    private static _evts = {};
     private static _parent: Component;
     private static _children: Component;
-    static element: HTMLElement;
+    static element: HTMLElement & { component: Component };
     static state = {};
 
     static init(): string {
@@ -30,9 +33,16 @@ class Component {
     static create(parentElement: string = 'div') {
         if (this.element) return;
         this._id = v1();
-        this.element = document.createElement(parentElement);
+        this.element = document.createElement(parentElement) as typeof this.element;
         this.setTemplate(this.init());
         this.render();
+        this.element.component = this;
+        // add component to each children
+        if (this.element.children.length === 0) return this;
+        for (let i=0; i<this.element.children.length; i++) {
+            (this.element.children[i] as typeof this.element).component = this;
+        }
+        console.log('this.element.children: ', this.element.children);
         return this;
     }
 
@@ -72,6 +82,27 @@ class Component {
     static setParent(parent: Component) {
         this._parent = parent;
         return this;
+    }
+
+    static addEvt(key: string, callback: () => void) {
+        if (this._evts[key]) {
+            console.warn(`you are override this key: ${key} event`);
+        }
+        this._evts[key] = callback;
+        return this;
+    }
+
+    static runEvt(key: string) {
+        this._evts[key]();
+        return this;
+    }
+
+    static getEvt(scope: Component, key: string) {
+        return `
+            (function () {
+                console.log('get evt');
+            })();
+        `;
     }
 
     static render(parent?: Component, state?) {
