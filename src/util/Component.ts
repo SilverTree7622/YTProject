@@ -36,13 +36,7 @@ class Component {
         this.element = document.createElement(parentElement) as typeof this.element;
         this.setTemplate(this.init());
         this.render();
-        this.element.component = this;
-        // add component to each children
-        if (this.element.children.length === 0) return this;
-        for (let i=0; i<this.element.children.length; i++) {
-            (this.element.children[i] as typeof this.element).component = this;
-        }
-        console.log('this.element.children: ', this.element.children);
+        this._addComponent2Children();
         return this;
     }
 
@@ -113,7 +107,21 @@ class Component {
         } else {
             this.element.innerHTML = this._template;
         }
+        this.element.component = this;
         return this.element.outerHTML;
+    }
+
+    private static _addComponent2Children() {
+        // add component to each children
+        if (this.element.childNodes.length === 0) return this;
+        const addComponentLoop = (element: HTMLElement) => {
+            if (element.children.length === 0) return;
+            for (let i=0; i<element.children.length; i++) {
+                (element.children[i] as typeof this.element).component = this;
+                addComponentLoop(element.children[i] as typeof element);
+            }
+        };
+        addComponentLoop(this.element);
     }
 }
 

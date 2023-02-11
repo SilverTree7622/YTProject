@@ -26,7 +26,7 @@ class PageMain extends Component {
                     return `
                         <div class='group relative'>
                             <button
-                                onclick='console.dir(this.parentElement)'
+                                onclick='console.dir(this)';
                                 data-bs-toggle="modal"
                                 data-bs-target="#exampleModal${idx}"
                                 class="relative h-80 w-full overflow-hidden rounded-lg text-white bg-black group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1"
@@ -49,7 +49,7 @@ class PageMain extends Component {
                                                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                                 </svg>
-                                            </button>
+                                            </button> 
                                             <div class="grid w-full grid-cols-1 items-start gap-y-8 gap-x-6 sm:grid-cols-12 lg:gap-x-8">
                                                 <div class="aspect-w-2 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
                                                     <img src="https://tailwindui.com/img/ecommerce-images/product-quick-preview-02-detail.jpg" alt="Two each of gray, white, and black shirts arranged on table." class="object-cover object-center">
