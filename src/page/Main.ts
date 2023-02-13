@@ -7,6 +7,8 @@ class PageMain extends Component {
     };
 
     static init(): string {
+        console.log('page main init');
+        this.setName('page main');
         this.setState({
             list: [
                 { title: '폼_미쳤다.ts', popUp: 'https://www.naver.com' },
@@ -18,7 +20,7 @@ class PageMain extends Component {
             console.log('show evt called');
         });
         return `
-            <div class='bg-indigo-800 text-white text-center font-bold rounded-lg border shadow-lg p-2'>
+            <div onclick='console.dir(this); console.log(this.component);' class='bg-indigo-800 text-white text-center font-bold rounded-lg border shadow-lg p-2'>
                 ${this.state.title}
             </div>
             <div class="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-0">
@@ -26,7 +28,7 @@ class PageMain extends Component {
                     return `
                         <div class='group relative'>
                             <button
-                                onclick='console.dir(this)';
+                                onclick='console.dir(this); console.log(this.component);';
                                 data-bs-toggle="modal"
                                 data-bs-target="#exampleModal${idx}"
                                 class="relative h-80 w-full overflow-hidden rounded-lg text-white bg-black group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1"

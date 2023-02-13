@@ -8,6 +8,8 @@ class Layout extends Component {
     };
 
     static init() {
+        console.log('layout init');
+        this.setName('layout');
         this.setRootClass('container');
         return `
             ${PageMain.render(this)}
