@@ -1,18 +1,20 @@
 import "./tailwind.css";
-import Layout from "./layout/main";
-
-
-const addFooter = async function () {
-    const resp = await fetch("footer.htm");
-    const html = await resp.text();
-    document.body.insertAdjacentHTML("beforeend", html);
-}
-console.log('addFooter: ', addFooter);
+import { CElement, AddCustomElement } from "./util/Element";
 
 
 const app = document.createElement('div');
 app.id = 'app';
-app.className = 'flex items-center justify-center h-screen';
+app.className = 'flex items-center justify-center h-screen bg-grey';
 document.body.appendChild(app);
 
-Layout.append(app);
+
+AddCustomElement({
+    name: 'page-main',
+    path: 'src/page/page.html',
+    append: app,
+    theActualClass: class PageMain extends CElement {
+        constructor(n, p) {
+            super(n, p);
+        }
+    }
+});
