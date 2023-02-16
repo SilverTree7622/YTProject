@@ -1,21 +1,17 @@
-import Component from '@util/Component';
-import PageMain from '@src/page/Main';
+import PageConfig from '@src/page/Main';
+import { AddCustomElement, CElement, TCElement } from '@src/util/Element';
 
 
-class Layout extends Component {
-    static state = {
-        title: '메인 레이아웃',
-    };
-
-    static init() {
-        console.log('layout init');
-        this.setName('layout');
-        this.setRootClass('container');
-        return `
-            ${PageMain.render(this)}
-        `;
-    }
-}
+const LayoutConfig: TCElement = {
+    name: 'layout-element',
+    inner: `
+        <slot name='page'></slot>
+        <p>Layout wtf</p>
+    `,
+    slots: [
+        [ 'page', AddCustomElement(PageConfig) ],
+    ],
+};
 
 
-export default Layout;
+export default LayoutConfig;

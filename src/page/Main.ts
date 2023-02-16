@@ -1,5 +1,12 @@
 import Component from "@src/util/Component";
 
+const PageConfig = {
+    name: 'page-element',
+    inner: `
+        page main testing
+    `,
+};
+
 class PageMain extends Component {
     static state = {
         title: <string> '메인 페이지',
@@ -80,4 +87,4 @@ class PageMain extends Component {
 }
 
 
-export default PageMain;
+export default PageConfig;
