@@ -1,4 +1,6 @@
 import { v1 } from 'uuid';
+import install from '@twind/with-web-components';
+import TConfig from '../../twind.config.js';
 
 
 type TCElement = {
@@ -6,14 +8,19 @@ type TCElement = {
     render: (classEle: CElement) => string;
     appendTarget?: HTMLElement;
     isOnlyDefine?: boolean;
+    styles?: [ key: string, classList: string ][];
     onCreate?: (classEle: CElement) => void;
     attrList?: [ key: string, value: any ][];
     onAttrChanged?: (attr, oldValue, newValue) => void;
     slots?: [ key: string, element: any ][];
 };
 
-class CElement extends HTMLElement {
+const withTwind = install(TConfig);
+console.log('TConfig: ', TConfig);
+
+class CElement extends withTwind(HTMLElement) {
     private _id: string = '';
+    shadow: ShadowRoot;
     config: TCElement = {} as TCElement;
     cName: string = '';
     render: TCElement['render'] = () => '';
@@ -30,6 +37,7 @@ class CElement extends HTMLElement {
         if (!render) {
             console.warn(`${name} inner is empty`);
         }
+        this.shadow = this.attachShadow({ mode: 'open' });
         this._id = v1();
         this.config = config;
         this.cName = name;
@@ -37,10 +45,8 @@ class CElement extends HTMLElement {
     }
     connectedCallback() {
         this.cInner = this.render(this);
-        const shadow = this.attachShadow({ mode: 'open' });
-        shadow.innerHTML = this.cInner;
+        this.shadow.innerHTML = this.cInner;
         this.setSlots();
-
     }
     disconnectedCallback() {
         // browser calls this method when the element is removed from the document
@@ -54,6 +60,25 @@ class CElement extends HTMLElement {
     }
     html() {
         return this.outerHTML;
+    }
+    // styles
+    setStyles(element?) {
+        if (!this.config.styles?.length) return;
+        this.config.styles.forEach(([ key, classList ]) => {
+            let collections;
+            if (element) {
+                collections = element.getElementsByClassName(key);
+            }
+            else {
+                collections = this.getElementsByClassName(key);
+            }
+            for (let i=0; i<collections.length; i++) {
+                collections[i].classList.remove(key);
+                collections[i].classList.add(classList);
+            }
+        });
+        console.log('element: ', element);
+        return element;
     }
     
     // related attribute callbacks
@@ -71,7 +96,8 @@ class CElement extends HTMLElement {
         this.slots.forEach(([ key, element ]) => {
             const slot = this.shadowRoot.querySelector(`slot[name='${key}']`);
             if (!slot) return;
-            slot.replaceWith(element);
+            slot.replaceWith(this.setStyles(element));
+            console.log('slot: ', slot, element);
         });
     }
 }
@@ -89,6 +115,7 @@ const AddCustomElement = (
         render,
         appendTarget,
         isOnlyDefine = false,
+        styles = [],
         onCreate,
         attrList = [],
         onAttrChanged,
@@ -133,5 +160,5 @@ const AddCustomElement = (
 export {
     TCElement,
     CElement,
-    AddCustomElement
+    AddCustomElement,
 };

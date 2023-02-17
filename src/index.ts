@@ -1,5 +1,5 @@
-import LayoutConfig from "./layout/main";
 import "./tailwind.css";
+import LayoutConfig from "./layout/main";
 import { AddCustomElement } from "./util/Element";
 
 
