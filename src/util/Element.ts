@@ -3,47 +3,44 @@ import { v1 } from 'uuid';
 
 type TCElement = {
     name: string;
-    inner: string;
+    render: (classEle: CElement) => string;
     appendTarget?: HTMLElement;
     isOnlyDefine?: boolean;
     onCreate?: (classEle: CElement) => void;
-    attrList?: string[];
+    attrList?: [ key: string, value: any ][];
     onAttrChanged?: (attr, oldValue, newValue) => void;
     slots?: [ key: string, element: any ][];
 };
 
 class CElement extends HTMLElement {
     private _id: string = '';
-    private static _attrList: string[] = [];
+    config: TCElement = {} as TCElement;
     cName: string = '';
+    render: TCElement['render'] = () => '';
     cInner: string = '';
     cAttrList: string[] = [];
-    template: string = '';
-    slots: [ key: string, element: string ][] = [];
+    slots: [ key: string, element: any ][] = [];
 
-    constructor(name: string, inner: string) {
+    constructor(config: TCElement, name: string, render: TCElement['render']) {
         super();
         if (!name.includes('-')) {
             console.log('name: ', name);
             throw new Error('name must include a dash');
         }
-        if (inner === '') {
+        if (!render) {
             console.warn(`${name} inner is empty`);
         }
         this._id = v1();
+        this.config = config;
         this.cName = name;
-        this.cInner = inner;
-        this.template = `
-            <template>
-                ${inner}
-            </template>
-        `;
-        this.setAttrList();
+        this.render = render;
     }
     connectedCallback() {
+        this.cInner = this.render(this);
         const shadow = this.attachShadow({ mode: 'open' });
         shadow.innerHTML = this.cInner;
         this.setSlots();
+
     }
     disconnectedCallback() {
         // browser calls this method when the element is removed from the document
@@ -60,12 +57,9 @@ class CElement extends HTMLElement {
     }
     
     // related attribute callbacks
-    setAttrList() {
-        if (!this.cAttrList.length) return;
-        CElement._attrList = this.cAttrList;
-        return CElement._attrList.length;
+    getAttrList(): any {
+        return this.cAttrList.map( attr => JSON.parse(this.getAttribute(attr)) );
     }
-    static get observedAttributes() { return this._attrList; }
     attributeChangedCallback(attr, oldValue, newValue) {
         this.attributeChanged(attr, oldValue, newValue);
     }
@@ -92,7 +86,7 @@ const AddCustomElement = (
 ) => {
     const {
         name,
-        inner,
+        render,
         appendTarget,
         isOnlyDefine = false,
         onCreate,
@@ -101,18 +95,20 @@ const AddCustomElement = (
         slots = [],
     } = args;
 
-    console.log('args: ', args);
+    console.log('name, args: ', name, args);
 
     const classEle = class extends CElement {
-        constructor(name, inner) {
-            super(name, inner);
-            if (attrList.length > 0) {
-                this.cAttrList = attrList;
-                this.setAttrList();
+        static observedAttributes = attrList.length ? attrList.map( ([ key ]) => key ) : [];
+        constructor(args, name, render) {
+            super(args, name, render);
+            if (attrList.length) {
+                this.cAttrList = attrList.map( ([ key ]) => key );
+                attrList.map(([ key, value ]) => {
+                    this.setAttribute(key, JSON.stringify(value));
+                });
             }
-            if (slots.length > 0) {
+            if (slots.length) {
                 this.slots = slots;
-                // this.setSlots();
             }
         }
         attributeChanged(attr, oldValue, newValue) {
@@ -123,7 +119,7 @@ const AddCustomElement = (
     if (isOnlyDefine) {
         return `<${name}></${name}>`;
     };
-    const ele = new classEle(name, inner);
+    const ele = new classEle(args, name, render);
     if (appendTarget) {
         appendTarget.appendChild(ele);
     }

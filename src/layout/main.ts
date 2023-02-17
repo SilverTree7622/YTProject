@@ -4,10 +4,12 @@ import { AddCustomElement, CElement, TCElement } from '@src/util/Element';
 
 const LayoutConfig: TCElement = {
     name: 'layout-element',
-    inner: `
-        <slot name='page'></slot>
-        <p>Layout wtf</p>
-    `,
+    render: () => {
+        return `
+            <p>Layout wtf</p>
+            <slot name='page'></slot>
+        `;
+    },
     slots: [
         [ 'page', AddCustomElement(PageConfig) ],
     ],
